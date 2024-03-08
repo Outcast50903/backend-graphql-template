@@ -33,3 +33,12 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Drizzle - Migrations
+src/drizzle/migrations
+
+# GraphQL - Schema
+src/schema.gql
+
+# Environment variables
+.env
