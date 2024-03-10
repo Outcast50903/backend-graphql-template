@@ -8,12 +8,16 @@ import {
 } from 'apollo-server-core';
 import { join } from 'path';
 
-import { DrizzleModule } from './drizzle/drizzle.module';
-import { HelloModule } from './hello/hello.module';
+import { AuthModule } from './auth/auth.module';
+import configuration from './config/configuration';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+    }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
@@ -29,8 +33,8 @@ import { HelloModule } from './hello/hello.module';
             }) as unknown),
       ],
     }),
-    DrizzleModule,
-    HelloModule,
+    UsersModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
