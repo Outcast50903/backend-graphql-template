@@ -6,7 +6,6 @@ import { ValidRoles } from '@/auth/enums/valid-roles.enum';
 import { JWTAuthGuard } from '@/auth/guard/jwt-auth.guard';
 import { PaginationArgs } from '@/prisma/paginated/dto';
 
-import { ValidRolesArgs } from './dto/args/valid-roles.args';
 import { User } from './dto/entities/user.entity';
 import { PaginatedUsers } from './dto/inputs/paginated-user.inputs';
 import { UpdateUserInput } from './dto/inputs/update-user.input';
