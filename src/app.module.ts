@@ -2,6 +2,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
+import { JwtService } from '@nestjs/jwt';
 import {
   ApolloServerPluginLandingPageLocalDefault,
   ApolloServerPluginLandingPageProductionDefault,
@@ -9,6 +10,7 @@ import {
 import { join } from 'path';
 
 import { AuthModule } from './auth/auth.module';
+import { CommonModule } from './common/common.module';
 import configuration from './config/configuration';
 import { UsersModule } from './users/users.module';
 
@@ -18,23 +20,41 @@ import { UsersModule } from './users/users.module';
       isGlobal: true,
       load: [configuration],
     }),
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+    GraphQLModule.forRootAsync({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      playground: false,
-      plugins: [
-        process.env.NODE_ENV === 'production'
-          ? ApolloServerPluginLandingPageProductionDefault({
-              graphRef: 'my-graph-id@my-graph-variant',
-              footer: false,
-            })
-          : (ApolloServerPluginLandingPageLocalDefault({
-              footer: false,
-            }) as unknown),
-      ],
+      imports: [AuthModule],
+      inject: [JwtService],
+      useFactory: async (
+        JwtService: JwtService,
+      ): Promise<ApolloDriverConfig> => ({
+        autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+        playground: false,
+        context: ({ req }) => {
+          const token = req.headers.authorization?.replace('Bearer ', '');
+          if (!token) {
+            throw new Error('No token provided');
+          }
+
+          const payload = JwtService.decode(token);
+          if (!payload) {
+            throw new Error('Invalid token');
+          }
+        },
+        plugins: [
+          process.env.NODE_ENV === 'production'
+            ? ApolloServerPluginLandingPageProductionDefault({
+                graphRef: 'my-graph-id@my-graph-variant',
+                footer: false,
+              })
+            : (ApolloServerPluginLandingPageLocalDefault({
+                footer: false,
+              }) as unknown),
+        ],
+      }),
     }),
     UsersModule,
     AuthModule,
+    CommonModule,
   ],
 })
 export class AppModule {}
