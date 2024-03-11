@@ -34,8 +34,8 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# Drizzle - Migrations
-src/drizzle/migrations
+# Prisma - Migrations
+prisma/migrations
 
 # GraphQL - Schema
 src/schema.gql
