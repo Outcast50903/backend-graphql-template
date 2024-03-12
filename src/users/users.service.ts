@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 import { SingUpInput } from '@/auth/dto/signup.inputs';
@@ -55,17 +54,29 @@ export class UsersService {
     }
   }
 
-  async update(updateUser: UpdateUserInput, user: User): Promise<User> {
+  async update(updateUser: UpdateUserInput, currentUser: User): Promise<User> {
     try {
       const user = await this.prisma.user.update({
         where: { id: updateUser.id },
         data: {
           ...updateUser,
-          roles: {
-            set: updateUser.roles.map((role) => role.toUpperCase()) as Role[],
-          },
         },
       });
+
+      const { id, ...rest } = updateUser;
+
+      if (rest && Object.keys(rest).length > 0) {
+        await this.prisma.logger.create({
+          data: {
+            userId: currentUser.id,
+            message: `User ${id} has been updated with ${JSON.stringify(
+              Object.keys(rest),
+            )}`,
+            type: 'UPDATED',
+            createdAt: new Date(),
+          },
+        });
+      }
 
       return user;
     } catch (error) {
@@ -78,6 +89,15 @@ export class UsersService {
       const user = await this.prisma.user.update({
         where: { id },
         data: { isEnabled: false },
+      });
+
+      await this.prisma.logger.create({
+        data: {
+          userId: currentUser.id,
+          message: `User ${user.email} has been blocked`,
+          type: 'BLOCKED',
+          createdAt: new Date(),
+        },
       });
 
       return user;
