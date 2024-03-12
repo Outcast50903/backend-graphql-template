@@ -13,14 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// export const users = pgTable("user", {
-//   id: text("id").notNull().primaryKey(),
-//   name: text("name"),
-//   email: text("email").notNull(),
-//   emailVerified: timestamp("emailVerified", { mode: "date" }),
-//   image: text("image"),
-// });
-
 enum Role {
   ADMIN
   USER
@@ -38,46 +30,55 @@ model User {
   updatedAt DateTime? 
   deleteAt  DateTime? 
   isEnabled Boolean   @default(true)
+
+  accounts  Accounts[]
+  session   Session[]
+  logger    Logger[]
 }
 
-// export const accounts = pgTable(
-//   "account",
-//   {
-//     userId: text("userId")
-//       .notNull()
-//       .references(() => users.id, { onDelete: "cascade" }),
-//     type: text("type").$type<AdapterAccount["type"]>().notNull(),
-//     provider: text("provider").notNull(),
-//     providerAccountId: text("providerAccountId").notNull(),
-//     refresh_token: text("refresh_token"),
-//     access_token: text("access_token"),
-//     expires_at: integer("expires_at"),
-//     token_type: text("token_type"),
-//     scope: text("scope"),
-//     id_token: text("id_token"),
-//     session_state: text("session_state"),
-//   },
-//   (account) => ({
-//     compoundKey: primaryKey(account.provider, account.providerAccountId),
-//   })
-// );
+model Accounts {
+  id               String    @default(uuid()) @id
+  userId           String    @db.VarChar(50)
+  type             String    @db.VarChar(50)
+  provider         String    @db.VarChar(50)
+  providerAccountId String    @db.VarChar(50)
+  refresh_token    String?   @db.VarChar(50)
+  access_token     String?   @db.VarChar(50)
+  expires_at       Int?      @db.Integer
+  token_type       String?   @db.VarChar(50)
+  scope            String?   @db.VarChar(50)
+  id_token         String?   @db.VarChar(50)
+  session_state    String?   @db.VarChar(50)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime? 
+  deleteAt         DateTime? 
+  isEnabled        Boolean   @default(true)
 
-// export const sessions = pgTable("session", {
-//   sessionToken: text("sessionToken").notNull().primaryKey(),
-//   userId: text("userId")
-//     .notNull()
-//     .references(() => users.id, { onDelete: "cascade" }),
-//   expires: timestamp("expires", { mode: "date" }).notNull(),
-// });
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
 
-// export const verificationTokens = pgTable(
-//   "verificationToken",
-//   {
-//     identifier: text("identifier").notNull(),
-//     token: text("token").notNull(),
-//     expires: timestamp("expires", { mode: "date" }).notNull(),
-//   },
-//   (vt) => ({
-//     compoundKey: primaryKey(vt.identifier, vt.token),
-//   })
-// );
+model Session {
+  sessionToken String   @id
+  userId       String
+  expires      DateTime
+
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model Logger {
+  id        String    @default(uuid()) @id
+  userId    String    @db.VarChar(50)
+  type      String    @db.VarChar(50)
+  message   String    @db.VarChar(255)
+  createdAt DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id])
+}
