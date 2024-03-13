@@ -5,7 +5,7 @@ services:
     image: postgres:15
     command: '-d 1' # set debug-level
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - ./db_data:/var/lib/postgresql/data
     ports:
       - '5432:5432'
     environment:
