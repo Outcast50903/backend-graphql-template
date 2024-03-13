@@ -7,9 +7,9 @@ import { PrismaModule } from '@/prisma';
 import { UsersModule } from '@/users/users.module';
 
 import { JWTStrategy } from './strategies/jwt.strategy';
+import { AuthController } from './auth.controller';
 import { AuthResolver } from './auth.resolver';
 import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
 
 @Module({
   providers: [AuthResolver, AuthService, JWTStrategy],
