@@ -26,4 +26,4 @@ COPY package.json bun.lockb ./
 RUN bun install --minify --splitting
 COPY --from=builder /app/dist ./dist
 
-CMD [ "node","dist/main" ]
+RUN bun run start:prod
