@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Query, Resolver } from '@nestjs/graphql';
+import { Args, Query, Resolver } from '@nestjs/graphql';
 
 import { User } from '@/users/dto/entities/user.entity';
 
@@ -14,7 +14,10 @@ export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
   @Query(() => AuthResponse, { name: 'revalidate' })
-  revalidateToken(@CurrentUser() user: User): AuthResponse {
-    return this.authService.revalidateToken(user);
+  revalidateToken(
+    @Args('refreshToken') refreshToken: string,
+    @CurrentUser() user: User,
+  ): Promise<AuthResponse> {
+    return this.authService.revalidateToken(user, refreshToken);
   }
 }
