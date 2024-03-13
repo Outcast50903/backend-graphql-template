@@ -38,16 +38,16 @@ model User {
 
 model Accounts {
   id               String    @default(uuid()) @id
-  userId           String    @db.VarChar(50)
+  userId           String    @db.VarChar(50) @unique
   type             String    @db.VarChar(50)
   provider         String    @db.VarChar(50)
   providerAccountId String    @db.VarChar(50)
-  refresh_token    String?   @db.VarChar(50)
-  access_token     String?   @db.VarChar(50)
+  refresh_token    String?   @db.VarChar(250)
+  access_token     String?   @db.VarChar(250)
   expires_at       Int?      @db.Integer
   token_type       String?   @db.VarChar(50)
   scope            String?   @db.VarChar(50)
-  id_token         String?   @db.VarChar(50)
+  id_token         String?   @db.VarChar(250)
   session_state    String?   @db.VarChar(50)
   createdAt        DateTime  @default(now())
   updatedAt        DateTime? 
@@ -58,11 +58,11 @@ model Accounts {
 }
 
 model Session {
-  sessionToken String   @id
-  userId       String
-  expires      DateTime
+  sessionToken     String   
+  userId           String    @id
+  expires          DateTime
 
-  user         User     @relation(fields: [userId], references: [id])
+  user             User     @relation(fields: [userId], references: [id])
 }
 
 model VerificationToken {
