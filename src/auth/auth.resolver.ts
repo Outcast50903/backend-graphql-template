@@ -4,9 +4,9 @@ import { Args, Query, Resolver } from '@nestjs/graphql';
 import { User } from '@/users/dto/entities/user.entity';
 
 import { CurrentUser } from './decorators/current-user.decorator';
-import { JWTAuthGuard } from './guard/jwt-auth.guard';
 import { AuthResponse } from './types/auth-response.types';
 import { AuthService } from './auth.service';
+import { JWTAuthGuard } from './guard';
 
 @Resolver(() => AuthResponse)
 @UseGuards(JWTAuthGuard)
