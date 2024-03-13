@@ -1,13 +1,13 @@
 import { applyDecorators, UseGuards } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 
 import { RoleProtected } from '@/auth/decorators';
 import { ResourceProtected } from '@/auth/decorators/resourse-protected.decorator';
 import { JWTAuthGuard, UserRolesGuard } from '@/auth/guard';
 
 import { DefaultActions } from '../enums';
+import { ResourceType } from '../interfaces';
 
-export function Auth(resource: Prisma.ModelName, action?: DefaultActions) {
+export function Auth(resource: ResourceType, action?: DefaultActions) {
   return applyDecorators(
     RoleProtected(action),
     ResourceProtected(resource),

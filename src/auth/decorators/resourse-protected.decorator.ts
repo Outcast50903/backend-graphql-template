@@ -1,7 +1,8 @@
 import { SetMetadata } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+
+import { ResourceType } from '@/common/interfaces';
 
 export const META_RESOURCE = 'resource';
 
-export const ResourceProtected = (resource: Prisma.ModelName) =>
+export const ResourceProtected = (resource: ResourceType) =>
   SetMetadata(META_RESOURCE, resource);

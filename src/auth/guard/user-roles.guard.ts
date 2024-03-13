@@ -11,6 +11,7 @@ import { Prisma } from '@prisma/client';
 import { Observable } from 'rxjs';
 
 import { DefaultActions } from '@/common/enums';
+import { ResourceType } from '@/common/interfaces';
 
 import { hasAbility } from '../../common/helpers/roles';
 import { META_ACTION } from '../decorators';
@@ -23,7 +24,7 @@ export class UserRolesGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const resource = this.reflector.get<Prisma.ModelName>(
+    const resource = this.reflector.get<ResourceType>(
       META_RESOURCE,
       context.getHandler(),
     );

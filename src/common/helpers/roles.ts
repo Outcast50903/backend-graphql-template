@@ -1,24 +1,19 @@
-import { Prisma } from '@prisma/client';
-
 import { DefaultActions } from '../enums';
+import { ResourceType } from '../interfaces';
 
 export const PERMISSIONS: Record<
   string,
-  DefaultActions[] | Record<Prisma.ModelName, DefaultActions[]>
+  DefaultActions[] | Record<ResourceType, DefaultActions[]>
 > = {
   USER: {
     User: [],
-    Accounts: [],
-    Session: [],
-    VerificationToken: [],
-    Logger: [],
   },
   ADMIN: [DefaultActions.manage],
 };
 
 export const hasAbility = (
   roles: string[],
-  resource: Prisma.ModelName,
+  resource: ResourceType,
   action: DefaultActions,
 ) => {
   const hasPermission = roles.some((role) => {
