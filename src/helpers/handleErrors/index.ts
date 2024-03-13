@@ -5,7 +5,7 @@ import {
   NotAcceptableException,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 import { ErrorType, RequestError } from './types';
 
@@ -14,7 +14,7 @@ import { ErrorType, RequestError } from './types';
 export default (error: RequestError, context: string) => {
   const logger = new Logger(context);
 
-  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+  if (error instanceof PrismaClientKnownRequestError) {
     const errorCodes: Record<string, ErrorType> = {
       P2000: {
         code: 400,
