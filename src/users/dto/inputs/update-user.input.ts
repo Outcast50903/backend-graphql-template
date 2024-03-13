@@ -1,7 +1,7 @@
 import { Field, ID, InputType, PartialType } from '@nestjs/graphql';
 import { IsArray, IsBoolean, IsOptional, IsUUID } from 'class-validator';
 
-import { ValidRoles } from '@/auth/enums/valid-roles.enum';
+import { ValidRoles } from '@/auth/enums';
 
 import { CreateUserInput } from './create-user.input';
 
