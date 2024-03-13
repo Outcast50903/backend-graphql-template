@@ -42,3 +42,7 @@ src/schema.gql
 
 # Environment variables
 .env
+.env.prod
+
+# Docker - Volume
+/db_data
