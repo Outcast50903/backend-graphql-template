@@ -40,7 +40,7 @@ COPY prisma ./prisma
 RUN npx prisma generate
 
 # Expose port 3000 for the application
-EXPOSE 3000 80
+EXPOSE 3000
 
 # Start the application
 CMD ["node", "dist/src/main"]
