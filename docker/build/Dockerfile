@@ -1,44 +1,46 @@
-# Install dependencies only when needed
-FROM oven/bun:debian AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodedebian to understand why libc6-compat might be needed.
-# RUN apk add --no-cache libc6-compat
+# Use an official Node.js runtime as the base image
+FROM node:21 as builder
+
+# Set the working directory in the Docker image
 WORKDIR /app
 
-COPY package.json bun.lockb ./
-RUN bun install --minify --splitting
+# Copy package.json and package-lock.json into the Docker image
+COPY package*.json ./
 
+# Install dependencies
+RUN npm install
 
-# Build the app with cache dependencies
-FROM oven/bun:debian AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# Copy the rest of the code into the Docker image
 COPY . .
-RUN bun run nest build
 
+# Build the application
+RUN npm run build
 
-# Production image, copy all the files and run next
-FROM oven/bun:debian AS runner
+# Start a new stage to create a smaller final image
+FROM node:21-alpine
 
-# Set working directory
-WORKDIR /usr/src/app
+# Set the working directory in the Docker image
+WORKDIR /app
 
-COPY package.json bun.lockb ./
-RUN bun install --minify --splitting
+# Copy package.json and package-lock.json into the Docker image
+COPY package*.json .env.prod ./
+
+RUN mv .env.prod .env
+
+# Install only production dependencies
+RUN npm install --only=production
+
+# Copy the build output from the previous stage into the Docker image
 COPY --from=builder /app/dist ./dist
 
-# Bundle app source
-COPY . .
+# Copy the Prisma schema
+COPY prisma ./prisma
 
-# Copy env file
-COPY .env ./
+# Generate Prisma Client
+RUN npx prisma generate
 
-# Creates a "dist" folder with the production build
-RUN bun run build
+# Expose port 3000 for the application
+EXPOSE 3000 80
 
-# Run Prisma Generate
-RUN bun run prisma generate --accelerate
-
-# Expose the port on which the app will run
-EXPOSE 3000
-
-CMD [ "node", "dist/src/main"]
+# Start the application
+CMD ["node", "dist/src/main"]

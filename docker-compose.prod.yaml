@@ -14,17 +14,6 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     container_name: nestDB
 
-  # neon-proxy:
-  #   build:
-  #     context: ./docker/neon-proxy/
-  #     dockerfile: Dockerfile
-  #   environment:
-  #     - PG_CONNECTION_STRING=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-  #   ports:
-  #     - '4444:4444'
-  #   depends_on:
-  #     - postgres
-
   nestapp:
     depends_on:
       - postgres
