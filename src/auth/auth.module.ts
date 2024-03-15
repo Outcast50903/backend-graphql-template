@@ -21,7 +21,7 @@ import { AuthService } from './auth.service';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         verifyOptions: { algorithms: ['ES256'] },
-        secret: configService.getOrThrow('JWT_SECRET'),
+        secret: configService.get('JWT_SECRET'),
         signOptions: { expiresIn: '1h' },
       }),
     }),
