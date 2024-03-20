@@ -1,5 +1,5 @@
 # Use an official Node.js runtime as the base image
-FROM node:21 as builder
+FROM node:21-alpine3.18 as builder
 
 # Set the working directory in the Docker image
 WORKDIR /app
